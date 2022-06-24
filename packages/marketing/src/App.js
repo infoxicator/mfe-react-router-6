@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route, Router } from 'react-router-dom';
+import { Routes, Route, unstable_HistoryRouter as HistoryRouter } from 'react-router-dom';
 import {
   StylesProvider,
   createGenerateClassName,
@@ -16,12 +16,12 @@ export default ({ history }) => {
   return (
     <div>
       <StylesProvider generateClassName={generateClassName}>
-        <Router history={history}>
-          <Switch>
-            <Route exact path="/pricing" component={Pricing} />
-            <Route path="/" component={Landing} />
-          </Switch>
-        </Router>
+        <HistoryRouter history={history}>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/pricing" element={<Pricing/>} />
+          </Routes>
+        </HistoryRouter>
       </StylesProvider>
     </div>
   );

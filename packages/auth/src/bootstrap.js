@@ -18,10 +18,11 @@ const mount = (el, { onSignIn, onNavigate, defaultHistory, initialPath }) => {
   ReactDOM.render(<App onSignIn={onSignIn} history={history} />, el);
 
   return {
-    onParentNavigate({ pathname: nextPathname }) {
+    onParentNavigate({ location: { pathname: nextPathname } }) {
       const { pathname } = history.location;
 
       if (pathname !== nextPathname) {
+        console.log('auth detected parent navigated to ', nextPathname, { history });
         history.push(nextPathname);
       }
     },
