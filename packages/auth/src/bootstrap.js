@@ -4,25 +4,31 @@ import { createMemoryHistory, createBrowserHistory } from 'history';
 import App from './App';
 
 // Mount function to start up the app
-const mount = (el, { onSignIn, onNavigate, defaultHistory, initialPath }) => {
+const mount = (el, { defaultHistory, initialPath }) => {
   const history =
     defaultHistory ||
     createMemoryHistory({
       initialEntries: [initialPath],
     });
 
-  if (onNavigate) {
-    history.listen(onNavigate);
-  }
-
-  ReactDOM.render(<App onSignIn={onSignIn} history={history} />, el);
+  
+    history.listen(() => {
+      window.dispatchEvent(
+        new CustomEvent(
+        '[auth] navigated', {
+        detail: {
+          nextPathname: history.location.pathname
+        }
+      }))
+    });
+  
+  ReactDOM.render(<App history={history} />, el);
 
   return {
-    onParentNavigate({ location: { pathname: nextPathname } }) {
+    onParentNavigate({ pathname: nextPathname }) {
       const { pathname } = history.location;
 
       if (pathname !== nextPathname) {
-        console.log('auth detected parent navigated to ', nextPathname, { history });
         history.push(nextPathname);
       }
     },

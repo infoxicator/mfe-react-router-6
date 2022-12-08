@@ -1,28 +1,35 @@
 import React from 'react';
-import { Routes, Route, unstable_HistoryRouter as HistoryRouter } from 'react-router-dom';
-import {
-  StylesProvider,
-  createGenerateClassName,
-} from '@material-ui/core/styles';
+import { Switch, Route, Router } from 'react-router-dom';
 
 import Signin from './components/Signin';
 import Signup from './components/Signup';
+import Outline from './components/Outline';
 
-const generateClassName = createGenerateClassName({
-  productionPrefix: 'au',
-});
 
-export default ({ history, onSignIn }) => {
+export default ({ history }) => {
+
+  React.useEffect(() => {
+    const hostNavigationHandler = ({ detail }) => {
+      const { pathname: nextPathname } = detail ;
+      const { pathname } = history.location;
+      if (nextPathname !== pathname) {
+        history.push(nextPathname);
+      }
+
+    }
+    window.addEventListener('[host] navigated', hostNavigationHandler)
+    return () => { 
+      window.removeEventListener('[host] navigated', hostNavigationHandler)
+    }
+  }, []); 
   return (
-    <div>
-      <StylesProvider generateClassName={generateClassName}>
-        <HistoryRouter history={history} >
-          <Routes>
-            <Route path="/auth/signin" element={<Signin onSignIn={onSignIn} />} />
-            <Route path="/auth/signup" element={<Signup onSignIn={onSignIn} />}/>
-          </Routes>
-        </HistoryRouter>
-      </StylesProvider>
-    </div>
+    <Outline name="auth" color="green">
+        <Router history={history}>
+          <Switch>
+            <Route path="/auth/signin" component={Signin} />
+            <Route path="/auth/signup" component={Signup} />
+          </Switch>
+        </Router>
+    </Outline>
   );
 };
